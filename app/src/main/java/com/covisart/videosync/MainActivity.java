@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
+import com.covisart.videosync.video.RoomTypeSelectActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -32,10 +34,6 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
-    private static final int RC_SIGN_IN = 9001;
-
-    public void LoginGoogleAuth(View view) {
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -46,13 +44,29 @@ public class MainActivity extends AppCompatActivity{
 
         mAuth = FirebaseAuth.getInstance();
 
+        if (DEBUG){
+            OpenVideoActivity(null);
+        }
+    }
+    private static final int RC_SIGN_IN = 9001;
+
+    public void LoginGoogleAuth(View view) {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+
+
     public void OpenVideoActivity(View view){
-        Intent intent = new Intent(this, VideoActivity.class);
-        startActivity(intent);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null){
+            Intent intent = new Intent(this, RoomTypeSelectActivity.class);
+            intent.putExtra("USER_ID", user.getUid());
+            startActivity(intent);
+        }
+        else{
+            Toast.makeText(this,"Login olmanız gerekiyor.",Toast.LENGTH_LONG).show();
+        }
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -85,7 +99,6 @@ public class MainActivity extends AppCompatActivity{
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.d(TAG, "signInWithCredential:failure", task.getException());
@@ -96,5 +109,8 @@ public class MainActivity extends AppCompatActivity{
                 });
     }
 
+    public void SignOut(View v){
+        this.mAuth.signOut();
+    }
 }
 

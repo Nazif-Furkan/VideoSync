@@ -1,4 +1,4 @@
-package com.covisart.videosync;
+package com.covisart.videosync.video;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,13 +12,19 @@ import android.view.View;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import com.covisart.videosync.MainActivity;
+import com.covisart.videosync.R;
+
 public class VideoActivity extends AppCompatActivity {
+    private static final String TAG = "CovisartTest";
     private VideoView player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
+
+
 
         player = findViewById(R.id.videoView);
 
@@ -31,8 +37,6 @@ public class VideoActivity extends AppCompatActivity {
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
-
         if (MainActivity.DEBUG){
             Uri defaultUri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.a1);
             player.setVideoURI(defaultUri);
@@ -73,14 +77,13 @@ public class VideoActivity extends AppCompatActivity {
 
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 123 && resultCode == RESULT_OK) {
-            Uri selectedfile = data.getData(); //The uri with the location of the file
-            player.setVideoURI(selectedfile);
-            Log.d("covisarttest", "onActivityResult: " + selectedfile);
+            Uri selected = data.getData(); //The uri with the location of the file
+            player.setVideoURI(selected);
+            Log.d(TAG, "onActivityResult: " + selected);
         }
     }
 }
